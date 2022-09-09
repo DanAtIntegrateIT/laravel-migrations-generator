@@ -156,10 +156,15 @@ jobs:
         if: ${{ matrix.laravel != '5.7.*' && matrix.laravel != '5.8.*' }}
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
 
+      - name: Sanitize matrix laravel value
+        run: |
+          echo "::set-output name=LARAVEL_VERSION::$(echo ${{ matrix.laravel }} | sed 's/.\*//')"
+        id: laravel
+
       - name: Upload coverage file
         uses: actions/upload-artifact@v2
         with:
-          name: php-${{ matrix.php }}-laravel-${{ matrix.laravel }}.coverage
+          name: php-${{ matrix.php }}-laravel-${{ steps.laravel.outputs.LARAVEL_VERSION }}.coverage
           path: coverage.xml
 
   coverage:
@@ -170,6 +175,9 @@ jobs:
       - test
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Download coverage files
         uses: actions/download-artifact@v2
         with:
