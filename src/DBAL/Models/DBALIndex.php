@@ -63,6 +63,21 @@ abstract class DBALIndex implements Index
         return $this->name;
     }
 
+    public function indexHasLengths() : bool
+    {
+        $ret = false;
+        $lengths = $this->getLengths();
+        if (count($lengths) > 0){
+            foreach($lengths as $length){
+                if ($length > 0){
+                    $ret = true;
+                    break;
+                }
+            }
+        }
+        return $ret;
+    }
+
     /**
      * @inheritDoc
      */

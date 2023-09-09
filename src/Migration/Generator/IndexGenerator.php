@@ -51,10 +51,9 @@ class IndexGenerator
                 return $carry;
             }
 
-            // TODO Laravel 10 does not support `$table->index(DB::raw("with_length(16)"))`
-//            if ($index->getLengths()[0] !== null) {
-//                return $carry;
-//            }
+            if ($index->indexHasLengths()) {
+                return $carry;
+            }
 
             $columnName = $index->getColumns()[0];
 
@@ -74,6 +73,8 @@ class IndexGenerator
             ) {
                 return $carry;
             }
+
+
 
             // A column may have multiple indexes.
             // Set only first found index as chainable.
@@ -108,6 +109,8 @@ class IndexGenerator
         });
     }
 
+
+
     /**
      * Get column names with length.
      *
@@ -117,13 +120,12 @@ class IndexGenerator
     {
         $cols = [];
 
-        foreach ($index->getColumns() as $column) {
-            // TODO Laravel 10 does not support `$table->index(DB::raw("with_length(16)"))`
-//            if ($index->getLengths()[$i] !== null) {
-//                $cols[] = DB::raw($column . '(' . $index->getLengths()[$i] . ')');
-//                continue;
-//            }
-            $cols[] = $column;
+        foreach ($index->getColumns() as $i => $column) {
+            if ($index->getLengths()[$i] !== null) {
+                $cols[] =  \Illuminate\Support\Facades\DB::raw("$column(" . $index->getLengths()[$i] . ")");
+            }else {
+                $cols[] = $column;
+            }
         }
 
         return $cols;
