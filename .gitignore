@@ -16,3 +16,4 @@ docker-compose.yml
 composer.lock
 coverage.xml
 phpunit.xml
+/composer.phar

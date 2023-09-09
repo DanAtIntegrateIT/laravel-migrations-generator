@@ -125,11 +125,17 @@ class MySQLRepository extends Repository
     {
         $list       = new Collection();
         $procedures = DB::select("SHOW PROCEDURE STATUS WHERE Db='" . DB::getDatabaseName() . "'");
+        $setting = app(Setting::class);
 
         foreach ($procedures as $procedure) {
             // Change all keys to lowercase.
             $procedureArr = array_change_key_case((array) $procedure);
             $createProc   = $this->getProcedure($procedureArr['name']);
+
+            if ($setting->isNoDefiner()){
+                $pattern = "/CREATE DEFINER=`[^`]+`@`[^`]+` PROCEDURE/";
+                $createProc->{'Create Procedure'} = preg_replace($pattern, "CREATE PROCEDURE", $createProc->{'Create Procedure'});
+            }
 
             // Change all keys to lowercase.
             $createProcArr = array_change_key_case((array) $createProc);
@@ -159,7 +165,6 @@ class MySQLRepository extends Repository
     {
         $list       = new Collection();
         $functions = DB::select("SHOW FUNCTION STATUS WHERE Db='" . DB::getDatabaseName() . "'");
-
         $setting = app(Setting::class);
 
         foreach ($functions as $function) {
@@ -168,8 +173,8 @@ class MySQLRepository extends Repository
             $createFunc   = $this->getFunction($functionArr['name']);
 
             if ($setting->isNoDefiner()){
-                $pattern = "/CREATE DEFINER=`[^`]+`@`[^`]+` PROCEDURE/";
-                $createFunc->{'create function'} = preg_replace($pattern, "CREATE PROCEDURE", $createFunc->{'create function'});
+                $pattern = "/CREATE DEFINER=`[^`]+`@`[^`]+` FUNCTION/";
+                $createFunc->{'Create Function'} = preg_replace($pattern, "CREATE FUNCTION", $createFunc->{'Create Function'});
             }
 
             // Change all keys to lowercase.
