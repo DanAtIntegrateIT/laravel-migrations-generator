@@ -41,6 +41,7 @@ class MigrateGenerateCommand extends Command
                             {--t|tables= : A list of tables or views you wish to generate migrations for separated by a comma: users,posts,comments}
                             {--i|ignore= : A list of tables or views you wish to ignore, separated by a comma: users,posts,comments}
                             {--p|path= : Where should the file be created?}
+                            {--sd|skip-definer= : Do not output the definer in create statements}
                             {--tp|template-path= : The location of the template for this generator}
                             {--date= : Migrations will be created with specified date. Views and foreign keys will be created with + 1 second. Date should be in format supported by Carbon::parse}
                             {--table-filename= : Define table migration filename, default pattern: [datetime]_create_[name]_table.php}
@@ -193,6 +194,7 @@ class MigrateGenerateCommand extends Command
         $setting->setIgnoreForeignKeyNames((bool) $this->option('default-fk-names'));
         $setting->setSquash((bool) $this->option('squash'));
         $setting->setWithHasTable((bool) $this->option('with-has-table'));
+        $setting->setNoDefiner((bool) $this->option('skip-definer'));
 
         $setting->setPath(
             $this->option('path') ?? Config::get('migrations-generator.migration_target_path')

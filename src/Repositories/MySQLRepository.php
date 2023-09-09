@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use KitLoong\MigrationsGenerator\Repositories\Entities\MySQL\ShowColumn;
 use KitLoong\MigrationsGenerator\Repositories\Entities\ProcedureDefinition;
 use KitLoong\MigrationsGenerator\Repositories\Entities\FunctionDefinition;
+use KitLoong\MigrationsGenerator\Setting;
 
 class MySQLRepository extends Repository
 {
@@ -159,10 +160,17 @@ class MySQLRepository extends Repository
         $list       = new Collection();
         $functions = DB::select("SHOW FUNCTION STATUS WHERE Db='" . DB::getDatabaseName() . "'");
 
+        $setting = app(Setting::class);
+
         foreach ($functions as $function) {
             // Change all keys to lowercase.
             $functionArr = array_change_key_case((array) $function);
             $createFunc   = $this->getFunction($functionArr['name']);
+
+            if ($setting->isNoDefiner()){
+                $pattern = "/CREATE DEFINER=`[^`]+`@`[^`]+` PROCEDURE/";
+                $createFunc->{'create function'} = preg_replace($pattern, "CREATE PROCEDURE", $createFunc->{'create function'});
+            }
 
             // Change all keys to lowercase.
             $createFuncArr = array_change_key_case((array) $createFunc);

@@ -21,6 +21,9 @@ class Setting
     private $ignoreIndexNames;
 
     /** @var bool */
+    private $noDefiner;
+
+    /** @var bool */
     private $ignoreForeignKeyNames;
 
     /** @var bool */
@@ -83,9 +86,21 @@ class Setting
         $this->ignoreIndexNames = $ignoreIndexNames;
     }
 
+
+
     public function isIgnoreForeignKeyNames(): bool
     {
         return $this->ignoreForeignKeyNames;
+    }
+
+    public function setNoDefiner(bool $noDefiner) : void
+    {
+        $this->noDefiner = $noDefiner;
+    }
+
+    public function isNoDefiner(): bool
+    {
+        return $this->noDefiner;
     }
 
     public function setIgnoreForeignKeyNames(bool $ignoreForeignKeyNames): void
@@ -152,7 +167,7 @@ class Setting
     {
         $this->procedureFilename = $procedureFilename;
     }
-    
+
     public function getFunctionFilename(): string
     {
         return $this->functionFilename;

@@ -123,6 +123,7 @@ Run `php artisan help migrate:generate` for a list of options.
 | -t, --tables[=TABLES]                | A list of tables or views you wish to generate migrations for separated by a comma: users,posts,comments                                                      |
 | -i, --ignore[=IGNORE]                | A list of tables or views you wish to ignore, separated by a comma: users,posts,comments                                                                      |
 | -p, --path[=PATH]                    | Where should the file be created?                                                                                                                             |
+| -sd, --skip-definer[=SKIP-DEFINER]   | Do not output the definer in create statments                                                                                                                 |
 | -tp, --template-path[=TEMPLATE-PATH] | The location of the template for this generator                                                                                                               |
 | --date[=DATE]                        | Migrations will be created with specified date. Views and foreign keys will be created with + 1 second. Date should be in format supported by `Carbon::parse` |
 | --table-filename[=TABLE-FILENAME]    | Define table migration filename, default pattern: `[datetime]\_create_[name]_table.php`                                                                       |
