@@ -13,6 +13,7 @@ return [
         'table'       => '[datetime]_create_[name]_table.php',
         'view'        => '[datetime]_create_[name]_view.php',
         'procedure'   => '[datetime]_create_[name]_proc.php',
+        'function'   => '[datetime]_create_[name]_func.php',
         'foreign_key' => '[datetime]_add_foreign_keys_to_[name]_table.php',
     ],
 ];

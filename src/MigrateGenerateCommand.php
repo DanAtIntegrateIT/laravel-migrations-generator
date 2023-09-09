@@ -46,6 +46,7 @@ class MigrateGenerateCommand extends Command
                             {--table-filename= : Define table migration filename, default pattern: [datetime]_create_[name]_table.php}
                             {--view-filename= : Define view migration filename, default pattern: [datetime]_create_[name]_view.php}
                             {--proc-filename= : Define stored procedure migration filename, default pattern: [datetime]_create_[name]_proc.php}
+                            {--func-filename= : Define stored function migration filename, default pattern: [datetime]_create_[name]_func.php}
                             {--fk-filename= : Define foreign key migration filename, default pattern: [datetime]_add_foreign_keys_to_[name]_table.php}
                             {--log-with-batch= : Log migrations with given batch number. We recommend using batch number 0 so that it becomes the first migration}
                             {--default-index-names : Don\'t use DB index names for migrations}
@@ -53,7 +54,7 @@ class MigrateGenerateCommand extends Command
                             {--use-db-collation : Generate migrations with existing DB collation}
                             {--skip-log : Don\'t log into migrations table}
                             {--skip-views : Don\'t generate views}
-                            {--skip-proc : Don\'t generate stored procedures}
+                            {--skip-proc : Don\'t generate stored procedures or stored functions}
                             {--squash : Generate all migrations into a single file}
                             {--with-has-table : Check for the existence of a table using `hasTable`}';
 
@@ -216,7 +217,7 @@ class MigrateGenerateCommand extends Command
         );
 
         $setting->setFunctionFilename(
-            $this->option('proc-filename') ?? Config::get('migrations-generator.filename_pattern.procedure')
+            $this->option('func-filename') ?? Config::get('migrations-generator.filename_pattern.function')
         );
 
         $setting->setFkFilename(
