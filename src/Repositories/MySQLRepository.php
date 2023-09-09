@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use KitLoong\MigrationsGenerator\Repositories\Entities\MySQL\ShowColumn;
 use KitLoong\MigrationsGenerator\Repositories\Entities\ProcedureDefinition;
+use KitLoong\MigrationsGenerator\Repositories\Entities\FunctionDefinition;
 
 class MySQLRepository extends Repository
 {
@@ -146,6 +147,40 @@ class MySQLRepository extends Repository
     private function getProcedure(string $procedure)
     {
         return DB::selectOne("SHOW CREATE PROCEDURE $procedure");
+    }
+
+    /**
+     * Get a list of stored functions.
+     *
+     * @return \Illuminate\Support\Collection<int, \KitLoong\MigrationsGenerator\Repositories\Entities\ProcedureDefinition>
+     */
+    public function getFunctions(): Collection
+    {
+        $list       = new Collection();
+        $functions = DB::select("SHOW FUNCTION STATUS WHERE Db='" . DB::getDatabaseName() . "'");
+
+        foreach ($functions as $function) {
+            // Change all keys to lowercase.
+            $functionArr = array_change_key_case((array) $function);
+            $createFunc   = $this->getFunction($functionArr['name']);
+
+            // Change all keys to lowercase.
+            $createFuncArr = array_change_key_case((array) $createFunc);
+            $list->push(new FunctionDefinition($functionArr['name'], $createFuncArr['create function']));
+        }
+
+        return $list;
+    }
+
+    /**
+     * Get single stored function by name.
+     *
+     * @param  string  $function  Function name.
+     * @return mixed
+     */
+    private function getFunction(string $function)
+    {
+        return DB::selectOne("SHOW CREATE FUNCTION $function");
     }
 
     /**

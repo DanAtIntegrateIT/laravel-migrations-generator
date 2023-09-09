@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use KitLoong\MigrationsGenerator\Enum\Driver;
 use KitLoong\MigrationsGenerator\Migration\ForeignKeyMigration;
+use KitLoong\MigrationsGenerator\Migration\FunctionMigration;
 use KitLoong\MigrationsGenerator\Migration\ProcedureMigration;
 use KitLoong\MigrationsGenerator\Migration\Squash;
 use KitLoong\MigrationsGenerator\Migration\TableMigration;
 use KitLoong\MigrationsGenerator\Migration\ViewMigration;
+use KitLoong\MigrationsGenerator\Schema\Models\FunctionStored;
 use KitLoong\MigrationsGenerator\Schema\Models\Procedure;
 use KitLoong\MigrationsGenerator\Schema\Models\View;
 use KitLoong\MigrationsGenerator\Schema\MySQLSchema;
@@ -98,6 +100,11 @@ class MigrateGenerateCommand extends Command
     protected $procedureMigration;
 
     /**
+     * @var \KitLoong\MigrationsGenerator\Migration\FunctionMigration
+     */
+    protected $functionMigration;
+
+    /**
      * @var \KitLoong\MigrationsGenerator\Migration\TableMigration
      */
     protected $tableMigration;
@@ -112,6 +119,7 @@ class MigrateGenerateCommand extends Command
         Squash $squash,
         ForeignKeyMigration $foreignKeyMigration,
         ProcedureMigration $procedureMigration,
+        FunctionMigration $functionMigration,
         TableMigration $tableMigration,
         ViewMigration $viewMigration
     ) {
@@ -121,6 +129,7 @@ class MigrateGenerateCommand extends Command
         $this->repository          = $repository;
         $this->foreignKeyMigration = $foreignKeyMigration;
         $this->procedureMigration  = $procedureMigration;
+        $this->functionMigration = $functionMigration;
         $this->tableMigration      = $tableMigration;
         $this->viewMigration       = $viewMigration;
     }
@@ -203,6 +212,10 @@ class MigrateGenerateCommand extends Command
         );
 
         $setting->setProcedureFilename(
+            $this->option('proc-filename') ?? Config::get('migrations-generator.filename_pattern.procedure')
+        );
+
+        $setting->setFunctionFilename(
             $this->option('proc-filename') ?? Config::get('migrations-generator.filename_pattern.procedure')
         );
 
@@ -439,6 +452,10 @@ class MigrateGenerateCommand extends Command
             $setting->getDate()->addSecond();
             $this->info("\nSetting up Stored Procedures migrations.");
             $this->generateProcedures();
+
+            $setting->getDate()->addSecond();
+            $this->info("\nSetting up Stored Functions migrations.");
+            $this->generateFunctions();
         }
 
         $setting->getDate()->addSecond();
@@ -468,6 +485,9 @@ class MigrateGenerateCommand extends Command
         if (!$this->option('skip-proc')) {
             $this->info("\nSetting up Stored Procedure migrations.");
             $this->generateProceduresToTemp();
+
+            $this->info("\nSetting up Stored Functions migrations.");
+            $this->generateFunctionsToTemp();
         }
 
         $this->info("\nSetting up Foreign Key migrations.");
@@ -597,6 +617,37 @@ class MigrateGenerateCommand extends Command
             $this->info('Prepared: ' . $procedure->getName());
         });
     }
+
+    protected function generateFunctionsToTemp(): void
+    {
+        $functions = $this->schema->getFunctions();
+        $functions->each(function (FunctionStored $function): void {
+            $this->functionMigration->writeToTemp($function);
+
+            $this->info('Prepared: ' . $function->getName());
+        });
+    }
+
+
+    /**
+     * Generate stored procedure migrations.
+     */
+    protected function generateFunctions(): void
+    {
+        $functions = $this->schema->getFunctions();
+        $functions->each(function (FunctionStored $function): void {
+            $path = $this->functionMigration->write($function);
+
+            $this->info("Created: $path");
+
+            if (!$this->shouldLog) {
+                return;
+            }
+
+            $this->logMigration($path);
+        });
+    }
+
 
     /**
      * Generates foreign key migrations.

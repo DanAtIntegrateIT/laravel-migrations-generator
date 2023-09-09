@@ -45,6 +45,9 @@ class Setting
     private $procedureFilename;
 
     /** @var string */
+    private $functionFilename;
+
+    /** @var string */
     private $fkFilename;
 
     /** @var bool */
@@ -148,6 +151,16 @@ class Setting
     public function setProcedureFilename(string $procedureFilename): void
     {
         $this->procedureFilename = $procedureFilename;
+    }
+    
+    public function getFunctionFilename(): string
+    {
+        return $this->functionFilename;
+    }
+
+    public function setFunctionFilename(string $functionFilename): void
+    {
+        $this->functionFilename = $functionFilename;
     }
 
     public function getFkFilename(): string

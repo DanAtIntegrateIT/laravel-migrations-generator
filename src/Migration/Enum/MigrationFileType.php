@@ -17,4 +17,5 @@ final class MigrationFileType extends Enum
     private const TABLE       = 'table';
     private const VIEW        = 'view';
     private const PROCEDURE   = 'procedure';
+    private const FUNCTION   = 'function';
 }

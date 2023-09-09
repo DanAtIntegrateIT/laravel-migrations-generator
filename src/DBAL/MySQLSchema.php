@@ -7,9 +7,11 @@ use Doctrine\DBAL\Schema\View as DoctrineDBALView;
 use Illuminate\Support\Collection;
 use KitLoong\MigrationsGenerator\DBAL\Models\MySQL\MySQLForeignKey;
 use KitLoong\MigrationsGenerator\DBAL\Models\MySQL\MySQLProcedure;
+use KitLoong\MigrationsGenerator\DBAL\Models\MySQL\MySQLFunction;
 use KitLoong\MigrationsGenerator\DBAL\Models\MySQL\MySQLTable;
 use KitLoong\MigrationsGenerator\DBAL\Models\MySQL\MySQLView;
 use KitLoong\MigrationsGenerator\Repositories\Entities\ProcedureDefinition;
+use KitLoong\MigrationsGenerator\Repositories\Entities\FunctionDefinition;
 use KitLoong\MigrationsGenerator\Repositories\MySQLRepository;
 use KitLoong\MigrationsGenerator\Schema\Models\Table;
 use KitLoong\MigrationsGenerator\Schema\Models\View;
@@ -76,6 +78,14 @@ class MySQLSchema extends DBALSchema implements MySQLSchemaInterface
         return (new Collection($this->mySQLRepository->getProcedures()))
             ->map(function (ProcedureDefinition $procedureDefinition) {
                 return new MySQLProcedure($procedureDefinition->getName(), $procedureDefinition->getDefinition());
+            });
+    }
+
+    public function getFunctions(): Collection
+    {
+        return (new Collection($this->mySQLRepository->getFunctions()))
+            ->map(function (FunctionDefinition $functionDefinition) {
+                return new MySQLFunction($functionDefinition->getName(), $functionDefinition->getDefinition());
             });
     }
 

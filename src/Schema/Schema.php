@@ -48,4 +48,11 @@ interface Schema
      * @return \Illuminate\Support\Collection<int, \KitLoong\MigrationsGenerator\Schema\Models\Procedure>
      */
     public function getProcedures(): Collection;
+
+    /**
+     * Get a list of store functions.
+     *
+     * @return \Illuminate\Support\Collection<int, \KitLoong\MigrationsGenerator\Schema\Models\FunctionStored>
+     */
+    public function getFunctions(): Collection;
 }
